@@ -11,10 +11,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-load_dotenv() # Optional: Loads environment variables from.env file
+load_dotenv() # Optional: Loads environment variables from .env file
 
 DATA_PATH = "data/"
-PDF_FILENAME = "documento_prueba.pdf" # PDF de prueba con contenido de ejemplo
+PDF_FILENAME = "document_sample.pdf" # Sample PDF with example content
 
 def load_documents():
     """Loads documents from the specified data path."""
@@ -27,8 +27,6 @@ def load_documents():
 
 # documents = load_documents() # Call this later
 
-
-# rag_local.py (continued)
 
 def split_documents(documents):
     """Splits documents into smaller chunks."""
@@ -45,8 +43,6 @@ def split_documents(documents):
 # loaded_docs = load_documents()
 # chunks = split_documents(loaded_docs) # Call this later
  
-# rag_local.py (continued)
-
 def get_embedding_function(model_name="nomic-embed-text"):
     """Initializes the Ollama embedding function."""
     # Ensure Ollama server is running (ollama serve)
@@ -55,8 +51,6 @@ def get_embedding_function(model_name="nomic-embed-text"):
     return embeddings
 
 # embedding_function = get_embedding_function() # Call this later
-
-# rag_local.py (continued)
 
 CHROMA_PATH = "chroma_db" # Directory to store ChromaDB data
 
@@ -71,8 +65,6 @@ def get_vector_store(embedding_function, persist_directory=CHROMA_PATH):
 
 embedding_function = get_embedding_function()
 vector_store = get_vector_store(embedding_function) # Call this later
-
-# rag_local.py (continued)
 
 def index_documents(chunks, embedding_function, persist_directory=CHROMA_PATH):
     """Indexes document chunks into the Chroma vector store."""
@@ -89,9 +81,6 @@ def index_documents(chunks, embedding_function, persist_directory=CHROMA_PATH):
     print(f"Indexing complete. Data saved to: {persist_directory}")
     return vectorstore
 
-## Removed redundant global calls to index_documents and Chroma
-
-# rag_local.py (continued)
 def create_rag_chain(vector_store, llm_model_name="qwen3:8b", context_window=8192):
     """Creates the RAG chain."""
     # Initialize the LLM
@@ -128,22 +117,16 @@ Question: {question}
     print("RAG chain created.")
     return rag_chain
 
-#... (previous function calls)
-vector_store = get_vector_store(embedding_function) # Assuming DB is already indexed
-rag_chain = create_rag_chain(vector_store) # Call this later
-
-# rag_local.py (continued)
-
 def query_rag(chain, question):
     """Queries the RAG chain and prints the response with colors."""
     BLUE = '\033[94m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     RESET = '\033[0m'
-    print(f"\n{GREEN}Procesando pregunta...{RESET}")
-    print(f"{BLUE}Pregunta: {question}{RESET}")
+    print(f"\n{GREEN}Processing question...{RESET}")
+    print(f"{BLUE}Question: {question}{RESET}")
     response = chain.invoke(question)
-    print(f"\n{YELLOW}Respuesta:{RESET}")
+    print(f"\n{YELLOW}Answer:{RESET}")
     print(f"{YELLOW}{response}{RESET}")
 
 # --- Main Execution ---
@@ -172,10 +155,10 @@ if __name__ == "__main__":
     GREEN = '\033[92m'
     BLUE = '\033[94m'
     RESET = '\033[0m'
-    print(f"\n{GREEN}Puedes hacer preguntas sobre el documento. Escribe 'salir' para terminar.{RESET}")
+    print(f"\n{GREEN}You can ask questions about the document. Type 'exit' to finish.{RESET}")
     while True:
-        user_q = input(f"\n{BLUE}Pregunta: {RESET}").strip()
-        if not user_q or user_q.lower() == 'salir':
-            print(f"{GREEN}Saliendo del modo interactivo.{RESET}")
+        user_q = input(f"\n{BLUE}Question: {RESET}").strip()
+        if not user_q or user_q.lower() == 'exit':
+            print(f"{GREEN}Exiting interactive mode.{RESET}")
             break
         query_rag(rag_chain, user_q)
